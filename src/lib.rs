@@ -11,6 +11,7 @@ use serde::Serialize;
 use serde_json::json;
 use uuid::Uuid;
 use worker::*;
+use std::fs;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
