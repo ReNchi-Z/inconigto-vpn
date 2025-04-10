@@ -96,28 +96,41 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
 }
 
 fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
+    // Extract context data for host and uuid
     let host = cx.data.host.to_string();
     let uuid = cx.data.uuid.to_string();
 
+    // Generate all the required links using helper functions
     let vmess_link = generate_vmess_link(&host, &uuid);
     let vless_link = generate_vless_link(&host, &uuid);
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    // Load template HTML from file
-    let template = include_str!("../templates/template.html"); // Pastikan path-nya benar
+    // Create an HTML response string
+    let html = format!(
+        r#"
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Generated Links</title>
+        </head>
+        <body>
+            <h1>Links</h1>
+            <ul>
+                <li><a href="{0}">VMess</a>: {0}</li>
+                <li><a href="{1}">VLESS</a>: {1}</li>
+                <li><a href="{2}">Trojan</a>: {2}</li>
+                <li><a href="{3}">Shadowsocks</a>: {3}</li>
+            </ul>
+        </body>
+        </html>
+        "#,
+        vmess_link, vless_link, trojan_link, ss_link
+    );
 
-    // Replace placeholders in the template with actual links
-    let html = template
-        .replace("{{vmess}}", &vmess_link)
-        .replace("{{vless}}", &vless_link)
-        .replace("{{trojan}}", &trojan_link)
-        .replace("{{ss}}", &ss_link);
-
+    // Return HTML response
     Response::from_html(html)
 }
-
-
 
 /// Generates the vmess link
 fn generate_vmess_link(host: &str, uuid: &str) -> String {
