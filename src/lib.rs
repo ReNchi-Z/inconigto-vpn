@@ -95,250 +95,178 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     let host = cx.data.host.to_string();
     let uuid = cx.data.uuid.to_string();
 
-    // Generate all the required links using the provided helper functions
+    // Generate all the required links using helper functions
     let vmess_link = generate_vmess_link(&host, &uuid);
     let vless_link = generate_vless_link(&host, &uuid);
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    // Create an HTML response with a modern, minimalist design
-    let html = format!(r#"
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Connection Hub</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-        <style>
-            :root {
-                --primary: #6366f1;
-                --primary-dark: #4f46e5;
-                --bg-color: #0f172a;
-                --card-bg: rgba(30, 41, 59, 0.7);
-                --text-color: #f8fafc;
-                --border-color: rgba(99, 102, 241, 0.3);
-            }
-            
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                font-family: 'Inter', sans-serif;
-            }
-            
-            body {
-                background-color: var(--bg-color);
-                background-image: 
-                    radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                    radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.15) 0%, transparent 50%);
-                color: var(--text-color);
-                min-height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 20px;
-            }
-            
-            .container {
-                max-width: 800px;
-                width: 100%;
-                backdrop-filter: blur(16px);
-                background: var(--card-bg);
-                border: 1px solid var(--border-color);
-                border-radius: 20px;
-                box-shadow: 
-                    0 10px 25px -3px rgba(0, 0, 0, 0.2),
-                    0 4px 6px -2px rgba(0, 0, 0, 0.1),
-                    0 0 0 1px rgba(99, 102, 241, 0.2);
-                padding: 30px;
-            }
-            
-            h1 {
-                text-align: center;
-                margin-bottom: 30px;
-                font-weight: 600;
-                font-size: 28px;
-                background: linear-gradient(to right, #6366f1, #8b5cf6);
-                -webkit-background-clip: text;
-                background-clip: text;
-                color: transparent;
-            }
-            
-            .links-grid {
-                display: grid;
-                gap: 20px;
-            }
-            
-            .link-card {
-                background: rgba(15, 23, 42, 0.6);
-                border: 1px solid rgba(99, 102, 241, 0.2);
-                border-radius: 12px;
-                padding: 20px;
-                transition: all 0.3s ease;
-            }
-            
-            .link-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 
-                    0 15px 30px -5px rgba(0, 0, 0, 0.3),
-                    0 0 0 1px rgba(99, 102, 241, 0.3);
-            }
-            
-            .link-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 15px;
-            }
-            
-            .link-title {
-                font-weight: 500;
-                font-size: 18px;
-                color: #a5b4fc;
-            }
-            
-            .link-content {
-                background: rgba(15, 23, 42, 0.7);
-                border: 1px solid rgba(99, 102, 241, 0.2);
-                border-radius: 8px;
-                padding: 15px;
-                font-family: 'Courier New', monospace;
-                font-size: 14px;
-                color: #94a3b8;
-                word-break: break-all;
-                margin-bottom: 10px;
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .copy-btn {
-                background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-                color: white;
-                border: none;
-                border-radius: 8px;
-                padding: 8px 16px;
-                cursor: pointer;
-                font-size: 14px;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .copy-btn::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-                transition: all 0.6s ease;
-            }
-            
-            .copy-btn:hover::before {
-                left: 100%;
-            }
-            
-            .copy-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
-            }
-            
-            .success-message {
-                display: none;
-                color: #34d399;
-                font-size: 14px;
-                margin-top: 5px;
-                text-align: right;
-            }
-            
-            @media (max-width: 600px) {
-                .container {
+    // Create an HTML response string with improved styling
+    let html = format!(
+        r#"
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Connection Links</title>
+            <style>
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                }}
+                body {{
+                    background-color: #f5f5f5;
                     padding: 20px;
-                }
-                
-                h1 {
-                    font-size: 24px;
-                }
-                
-                .link-content {
-                    font-size: 12px;
+                    color: #333;
+                }}
+                .container {{
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background-color: white;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 30px;
+                }}
+                h1 {{
+                    text-align: center;
+                    margin-bottom: 30px;
+                    color: #2563eb;
+                    font-size: 28px;
+                }}
+                .links-container {{
+                    display: grid;
+                    gap: 20px;
+                }}
+                .link-card {{
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    padding: 15px;
+                    transition: all 0.3s ease;
+                }}
+                .link-card:hover {{
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                }}
+                .link-header {{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                }}
+                .link-title {{
+                    font-weight: bold;
+                    font-size: 18px;
+                    color: #1f2937;
+                }}
+                .link-content {{
+                    position: relative;
+                    background-color: #f9fafb;
+                    border-radius: 6px;
                     padding: 12px;
-                }
-                
-                .link-title {
-                    font-size: 16px;
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Connection Hub</h1>
-            <div class="links-grid">
-                <div class="link-card">
-                    <div class="link-header">
-                        <span class="link-title">VMess</span>
-                        <button class="copy-btn" onclick="copyToClipboard('vmess-link')">Copy</button>
+                    font-family: monospace;
+                    font-size: 14px;
+                    word-break: break-all;
+                    margin-bottom: 10px;
+                    border: 1px solid #e5e7eb;
+                }}
+                .copy-btn {{
+                    background-color: #2563eb;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background-color 0.3s;
+                }}
+                .copy-btn:hover {{
+                    background-color: #1d4ed8;
+                }}
+                .success-message {{
+                    display: none;
+                    color: #059669;
+                    font-size: 14px;
+                    margin-top: 5px;
+                }}
+                @media (max-width: 600px) {{
+                    .container {{
+                        padding: 20px;
+                    }}
+                    .link-content {{
+                        font-size: 12px;
+                    }}
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Connection Links</h1>
+                <div class="links-container">
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">VMess</span>
+                            <button class="copy-btn" onclick="copyToClipboard('vmess-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="vmess-link">{0}</div>
+                        <div class="success-message" id="vmess-success">Copied to clipboard!</div>
                     </div>
-                    <div class="link-content" id="vmess-link">{}</div>
-                    <div class="success-message" id="vmess-success">Copied to clipboard!</div>
-                </div>
-                
-                <div class="link-card">
-                    <div class="link-header">
-                        <span class="link-title">VLESS</span>
-                        <button class="copy-btn" onclick="copyToClipboard('vless-link')">Copy</button>
+                    
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">VLESS</span>
+                            <button class="copy-btn" onclick="copyToClipboard('vless-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="vless-link">{1}</div>
+                        <div class="success-message" id="vless-success">Copied to clipboard!</div>
                     </div>
-                    <div class="link-content" id="vless-link">{}</div>
-                    <div class="success-message" id="vless-success">Copied to clipboard!</div>
-                </div>
-                
-                <div class="link-card">
-                    <div class="link-header">
-                        <span class="link-title">Trojan</span>
-                        <button class="copy-btn" onclick="copyToClipboard('trojan-link')">Copy</button>
+                    
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">Trojan</span>
+                            <button class="copy-btn" onclick="copyToClipboard('trojan-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="trojan-link">{2}</div>
+                        <div class="success-message" id="trojan-success">Copied to clipboard!</div>
                     </div>
-                    <div class="link-content" id="trojan-link">{}</div>
-                    <div class="success-message" id="trojan-success">Copied to clipboard!</div>
-                </div>
-                
-                <div class="link-card">
-                    <div class="link-header">
-                        <span class="link-title">Shadowsocks</span>
-                        <button class="copy-btn" onclick="copyToClipboard('ss-link')">Copy</button>
+                    
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">Shadowsocks</span>
+                            <button class="copy-btn" onclick="copyToClipboard('ss-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="ss-link">{3}</div>
+                        <div class="success-message" id="ss-success">Copied to clipboard!</div>
                     </div>
-                    <div class="link-content" id="ss-link">{}</div>
-                    <div class="success-message" id="ss-success">Copied to clipboard!</div>
                 </div>
             </div>
-        </div>
 
-        <script>
-            function copyToClipboard(elementId) {{
-                const element = document.getElementById(elementId);
-                const text = element.textContent;
-                
-                navigator.clipboard.writeText(text).then(() => {{
-                    // Show success message
-                    const successId = elementId.split('-')[0] + '-success';
-                    const successElement = document.getElementById(successId);
-                    successElement.style.display = 'block';
+            <script>
+                function copyToClipboard(elementId) {{
+                    const element = document.getElementById(elementId);
+                    const text = element.textContent;
                     
-                    // Hide after 2 seconds
-                    setTimeout(() => {{
-                        successElement.style.display = 'none';
-                    }}, 2000);
-                }}).catch(err => {{
-                    console.error('Failed to copy: ', err);
-                }});
-            }}
-        </script>
-    </body>
-    </html>
-    "#, vmess_link, vless_link, trojan_link, ss_link);
+                    navigator.clipboard.writeText(text).then(() => {{
+                        // Show success message
+                        const successId = elementId.split('-')[0] + '-success';
+                        const successElement = document.getElementById(successId);
+                        successElement.style.display = 'block';
+                        
+                        // Hide after 2 seconds
+                        setTimeout(() => {{
+                            successElement.style.display = 'none';
+                        }}, 2000);
+                    }}).catch(err => {{
+                        console.error('Failed to copy: ', err);
+                    }});
+                }}
+            </script>
+        </body>
+        </html>
+        "#,
+        vmess_link, vless_link, trojan_link, ss_link
+    );
 
     // Return HTML response
     Response::from_html(html)
