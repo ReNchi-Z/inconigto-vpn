@@ -25,7 +25,7 @@ async fn main(req: Request, env: Env, _: Context) -> Result<Response> {
     let main_page_url = env.var("MAIN_PAGE_URL").map(|x|x.to_string()).unwrap();
     let sub_page_url = env.var("SUB_PAGE_URL").map(|x|x.to_string()).unwrap();
     let costum_page_url = env.var("COSTUM_PAGE_URL").map(|x|x.to_string()).unwrap();
-    let config = Config { uuid, host: host.clone(), proxy_addr: host, proxy_port: 443, main_page_url, sub_page_url};
+    let config = Config { uuid, host: host.clone(), proxy_addr: host, proxy_port: 443, main_page_url, sub_page_url, costum_page_url};
 
     Router::with_data(config)
         .on_async("/", fe)
@@ -52,6 +52,9 @@ async fn sub(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     get_response_from_url(cx.data.sub_page_url).await
 }
 
+async fn costum(_: Request, cx: RouteContext<Config>) -> Result<Response> {
+    get_response_from_url(cx.data.costum_page_url).await
+}
 
 async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> {
     let mut proxyip = cx.param("proxyip").unwrap().to_string();
