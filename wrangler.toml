@@ -24,5 +24,5 @@ build = { command = "cargo install -q worker-build && worker-build --dev" }
 UUID = "bbbbbbbb-cccc-4ddd-eeee-ffffffffffff"
 MAIN_PAGE_URL = "https://raw.githubusercontent.com/InconigtoMode/inconigto-vpn/refs/heads/main/web/index.html"
 SUB_PAGE_URL = "https://raw.githubusercontent.com/InconigtoMode/inconigto-vpn/refs/heads/main/web/sub.html"
-
+COSTUM_PAGE_URL = "https://raw.githubusercontent.com/InconigtoMode/inconigto-vpn/refs/heads/main/web/costum.html"
 
