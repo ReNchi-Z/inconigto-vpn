@@ -101,7 +101,7 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    // Create an HTML response string with improved styling
+    // Create an HTML response with a tech-themed design
     let html = format!(
         r#"
         <!DOCTYPE html>
@@ -109,135 +109,333 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Connection Links</title>
+            <title>Connection Hub</title>
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Roboto+Mono&display=swap" rel="stylesheet">
             <style>
+                :root {{
+                    --bg-color: #0a0e17;
+                    --card-bg: #141c2e;
+                    --primary: #00ccff;
+                    --primary-glow: rgba(0, 204, 255, 0.5);
+                    --secondary: #ff00aa;
+                    --secondary-glow: rgba(255, 0, 170, 0.5);
+                    --text: #e6f1ff;
+                    --text-muted: #8a9cc2;
+                    --border: #1e2a45;
+                    --success: #00ff9d;
+                }}
+                
                 * {{
                     margin: 0;
                     padding: 0;
                     box-sizing: border-box;
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 }}
+                
                 body {{
-                    background-color: #f5f5f5;
+                    background-color: var(--bg-color);
+                    background-image: 
+                        radial-gradient(circle at 20% 20%, rgba(0, 204, 255, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 0, 170, 0.03) 0%, transparent 40%),
+                        linear-gradient(rgba(2, 13, 30, 0.7) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(2, 13, 30, 0.7) 1px, transparent 1px);
+                    background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
+                    background-position: 0 0, 0 0, -1px -1px, -1px -1px;
+                    color: var(--text);
+                    min-height: 100vh;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     padding: 20px;
-                    color: #333;
+                    font-family: 'Rajdhani', sans-serif;
                 }}
+                
                 .container {{
                     max-width: 800px;
-                    margin: 0 auto;
-                    background-color: white;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    width: 100%;
+                    background-color: var(--card-bg);
+                    border-radius: 12px;
+                    box-shadow: 
+                        0 0 30px rgba(0, 0, 0, 0.5),
+                        0 0 15px var(--primary-glow),
+                        0 0 25px var(--secondary-glow);
+                    overflow: hidden;
+                    position: relative;
+                    z-index: 1;
+                }}
+                
+                .container::before {{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+                    z-index: 2;
+                }}
+                
+                .container::after {{
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 1px;
+                    background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+                    z-index: 2;
+                }}
+                
+                .header {{
+                    background: linear-gradient(135deg, #141c2e 0%, #1a2540 100%);
+                    padding: 25px 30px;
+                    text-align: center;
+                    position: relative;
+                    overflow: hidden;
+                }}
+                
+                .header::before {{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: 
+                        linear-gradient(90deg, transparent, rgba(0, 204, 255, 0.1), transparent) no-repeat;
+                    background-size: 50% 100%;
+                    background-position: -100% 0;
+                    animation: header-shine 5s infinite;
+                }}
+                
+                @keyframes header-shine {{
+                    0% {{ background-position: -100% 0; }}
+                    40%, 100% {{ background-position: 200% 0; }}
+                }}
+                
+                h1 {{
+                    font-weight: 700;
+                    font-size: 28px;
+                    color: white;
+                    margin: 0;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    position: relative;
+                    display: inline-block;
+                }}
+                
+                h1::after {{
+                    content: '';
+                    position: absolute;
+                    bottom: -8px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 40px;
+                    height: 3px;
+                    background: linear-gradient(90deg, var(--primary), var(--secondary));
+                }}
+                
+                .content {{
                     padding: 30px;
                 }}
-                h1 {{
-                    text-align: center;
-                    margin-bottom: 30px;
-                    color: #2563eb;
-                    font-size: 28px;
-                }}
-                .links-container {{
+                
+                .links-grid {{
                     display: grid;
                     gap: 20px;
                 }}
+                
                 .link-card {{
-                    border: 1px solid #e5e7eb;
+                    background-color: rgba(20, 28, 46, 0.7);
+                    border: 1px solid var(--border);
                     border-radius: 8px;
-                    padding: 15px;
+                    padding: 20px;
                     transition: all 0.3s ease;
+                    position: relative;
+                    overflow: hidden;
                 }}
+                
+                .link-card::before {{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 4px;
+                    height: 100%;
+                    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+                }}
+                
                 .link-card:hover {{
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                    transform: translateY(-3px);
+                    box-shadow: 
+                        0 10px 20px rgba(0, 0, 0, 0.2),
+                        0 0 10px var(--primary-glow);
+                    border-color: var(--primary);
                 }}
+                
                 .link-header {{
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
-                    margin-bottom: 10px;
+                    margin-bottom: 15px;
                 }}
+                
                 .link-title {{
-                    font-weight: bold;
+                    font-weight: 600;
                     font-size: 18px;
-                    color: #1f2937;
+                    color: var(--primary);
+                    display: flex;
+                    align-items: center;
+                    letter-spacing: 0.5px;
                 }}
+                
+                .link-title::before {{
+                    content: '⬢';
+                    margin-right: 8px;
+                    font-size: 14px;
+                    color: var(--primary);
+                }}
+                
                 .link-content {{
-                    position: relative;
-                    background-color: #f9fafb;
+                    background-color: rgba(10, 14, 23, 0.8);
+                    border: 1px solid var(--border);
                     border-radius: 6px;
                     padding: 12px;
-                    font-family: monospace;
-                    font-size: 14px;
+                    font-family: 'Roboto Mono', monospace;
+                    font-size: 13px;
+                    color: var(--text-muted);
                     word-break: break-all;
                     margin-bottom: 10px;
-                    border: 1px solid #e5e7eb;
+                    position: relative;
+                    overflow: hidden;
                 }}
+                
+                .link-content::after {{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    right: 0;
+                    width: 30px;
+                    height: 100%;
+                    background: linear-gradient(to left, rgba(20, 28, 46, 1), transparent);
+                    pointer-events: none;
+                }}
+                
                 .copy-btn {{
-                    background-color: #2563eb;
+                    background: linear-gradient(135deg, var(--primary), var(--secondary));
                     color: white;
                     border: none;
                     border-radius: 6px;
                     padding: 8px 16px;
                     cursor: pointer;
                     font-size: 14px;
-                    transition: background-color 0.3s;
+                    font-weight: 600;
+                    font-family: 'Rajdhani', sans-serif;
+                    letter-spacing: 0.5px;
+                    transition: all 0.2s ease;
+                    position: relative;
+                    overflow: hidden;
                 }}
+                
+                .copy-btn::before {{
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                    transition: all 0.6s ease;
+                }}
+                
+                .copy-btn:hover::before {{
+                    left: 100%;
+                }}
+                
                 .copy-btn:hover {{
-                    background-color: #1d4ed8;
+                    box-shadow: 0 0 15px var(--primary-glow);
+                    transform: translateY(-2px);
                 }}
+                
+                .copy-btn:active {{
+                    transform: translateY(0);
+                }}
+                
                 .success-message {{
                     display: none;
-                    color: #059669;
+                    color: var(--success);
                     font-size: 14px;
-                    margin-top: 5px;
+                    margin-top: 8px;
+                    text-align: right;
+                    font-weight: 600;
                 }}
+                
                 @media (max-width: 600px) {{
-                    .container {{
+                    .header {{
                         padding: 20px;
                     }}
+                    
+                    h1 {{
+                        font-size: 24px;
+                    }}
+                    
+                    .content {{
+                        padding: 20px;
+                    }}
+                    
+                    .link-card {{
+                        padding: 15px;
+                    }}
+                    
                     .link-content {{
                         font-size: 12px;
+                        padding: 10px;
                     }}
                 }}
             </style>
         </head>
         <body>
             <div class="container">
-                <h1>Connection Links</h1>
-                <div class="links-container">
-                    <div class="link-card">
-                        <div class="link-header">
-                            <span class="link-title">VMess</span>
-                            <button class="copy-btn" onclick="copyToClipboard('vmess-link')">Copy</button>
+                <div class="header">
+                    <h1>Connection Hub</h1>
+                </div>
+                <div class="content">
+                    <div class="links-grid">
+                        <div class="link-card">
+                            <div class="link-header">
+                                <span class="link-title">VMess</span>
+                                <button class="copy-btn" onclick="copyToClipboard('vmess-link')">Copy</button>
+                            </div>
+                            <div class="link-content" id="vmess-link">{0}</div>
+                            <div class="success-message" id="vmess-success">✓ Connection data copied</div>
                         </div>
-                        <div class="link-content" id="vmess-link">{0}</div>
-                        <div class="success-message" id="vmess-success">Copied to clipboard!</div>
-                    </div>
-                    
-                    <div class="link-card">
-                        <div class="link-header">
-                            <span class="link-title">VLESS</span>
-                            <button class="copy-btn" onclick="copyToClipboard('vless-link')">Copy</button>
+                        
+                        <div class="link-card">
+                            <div class="link-header">
+                                <span class="link-title">VLESS</span>
+                                <button class="copy-btn" onclick="copyToClipboard('vless-link')">Copy</button>
+                            </div>
+                            <div class="link-content" id="vless-link">{1}</div>
+                            <div class="success-message" id="vless-success">✓ Connection data copied</div>
                         </div>
-                        <div class="link-content" id="vless-link">{1}</div>
-                        <div class="success-message" id="vless-success">Copied to clipboard!</div>
-                    </div>
-                    
-                    <div class="link-card">
-                        <div class="link-header">
-                            <span class="link-title">Trojan</span>
-                            <button class="copy-btn" onclick="copyToClipboard('trojan-link')">Copy</button>
+                        
+                        <div class="link-card">
+                            <div class="link-header">
+                                <span class="link-title">Trojan</span>
+                                <button class="copy-btn" onclick="copyToClipboard('trojan-link')">Copy</button>
+                            </div>
+                            <div class="link-content" id="trojan-link">{2}</div>
+                            <div class="success-message" id="trojan-success">✓ Connection data copied</div>
                         </div>
-                        <div class="link-content" id="trojan-link">{2}</div>
-                        <div class="success-message" id="trojan-success">Copied to clipboard!</div>
-                    </div>
-                    
-                    <div class="link-card">
-                        <div class="link-header">
-                            <span class="link-title">Shadowsocks</span>
-                            <button class="copy-btn" onclick="copyToClipboard('ss-link')">Copy</button>
+                        
+                        <div class="link-card">
+                            <div class="link-header">
+                                <span class="link-title">Shadowsocks</span>
+                                <button class="copy-btn" onclick="copyToClipboard('ss-link')">Copy</button>
+                            </div>
+                            <div class="link-content" id="ss-link">{3}</div>
+                            <div class="success-message" id="ss-success">✓ Connection data copied</div>
                         </div>
-                        <div class="link-content" id="ss-link">{3}</div>
-                        <div class="success-message" id="ss-success">Copied to clipboard!</div>
                     </div>
                 </div>
             </div>
@@ -272,7 +470,6 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     Response::from_html(html)
 }
 
-// Function to generate VMess link
 /// Generates the vmess link
 fn generate_vmess_link(host: &str, uuid: &str) -> String {
     let config = json!({
