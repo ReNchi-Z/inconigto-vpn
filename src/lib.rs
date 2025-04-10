@@ -90,7 +90,7 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
     
         Response::from_websocket(client)
     } else {
-        Response::from_html("hi from wasm!")
+        Response::from_html("https://inconigto-mode.web.id/")
     }
 
 }
@@ -104,8 +104,10 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    let template = include_str!("templates/template.html");
+    // Load template HTML from file
+    let template = include_str!("../templates/template.html"); // Pastikan path-nya benar
 
+    // Replace placeholders in the template with actual links
     let html = template
         .replace("{{vmess}}", &vmess_link)
         .replace("{{vless}}", &vless_link)
@@ -114,6 +116,7 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
 
     Response::from_html(html)
 }
+
 
 
 /// Generates the vmess link
