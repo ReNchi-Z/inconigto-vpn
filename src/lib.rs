@@ -91,27 +91,25 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
 }
 
 fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
-    // Struct to hold the response links
-    #[derive(Serialize)]
-    struct Link {
-        links: [String; 4],
-    }
-
-    // Extract context data for host and uuid
     let host = cx.data.host.to_string();
     let uuid = cx.data.uuid.to_string();
 
-    // Generate all the required links using helper functions
     let vmess_link = generate_vmess_link(&host, &uuid);
     let vless_link = generate_vless_link(&host, &uuid);
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    // Return the response with all the generated links
-    Response::from_json(&Link {
-        links: [vmess_link, vless_link, trojan_link, ss_link],
-    })
+    let template = include_str!("templates/template.html");
+
+    let html = template
+        .replace("{{vmess}}", &vmess_link)
+        .replace("{{vless}}", &vless_link)
+        .replace("{{trojan}}", &trojan_link)
+        .replace("{{ss}}", &ss_link);
+
+    Response::from_html(html)
 }
+
 
 /// Generates the vmess link
 fn generate_vmess_link(host: &str, uuid: &str) -> String {
