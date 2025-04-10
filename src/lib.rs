@@ -476,7 +476,7 @@ fn generate_vmess_link(host: &str, uuid: &str) -> String {
         "ps": "VMESS",
         "v": "2",
         "add": host,
-        "port": "443",
+        "port": "80",
         "id": uuid,
         "aid": "0",
         "scy": "zero",
@@ -485,7 +485,7 @@ fn generate_vmess_link(host: &str, uuid: &str) -> String {
         "host": host,
         "path": "/ID",
         "tls": "true",
-        "sni": host,
+        "sni": "",
         "alpn": ""
     });
     format!("vmess://{}", URL_SAFE.encode(config.to_string()))
