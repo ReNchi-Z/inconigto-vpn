@@ -11,7 +11,6 @@ use serde::Serialize;
 use serde_json::json;
 use uuid::Uuid;
 use worker::*;
-use std::fs;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
@@ -102,20 +101,32 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    // Baca template HTML dari file
-    let template = fs::read_to_string("template.html")
-        .map_err(|e| Error::new(format!("Failed to read template file: {}", e)))?;
+    // Create an HTML response string
+    let html = format!(
+        r#"
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Generated Links</title>
+        </head>
+        <body>
+            <h1>Links</h1>
+            <ul>
+                <li><a href="{0}">VMess</a>: {0}</li>
+                <li><a href="{1}">VLESS</a>: {1}</li>
+                <li><a href="{2}">Trojan</a>: {2}</li>
+                <li><a href="{3}">Shadowsocks</a>: {3}</li>
+            </ul>
+        </body>
+        </html>
+        "#,
+        vmess_link, vless_link, trojan_link, ss_link
+    );
 
-    // Gantikan placeholder dengan data dinamis
-    let html = template
-        .replace("{{vmess_link}}", &vmess_link)
-        .replace("{{vless_link}}", &vless_link)
-        .replace("{{trojan_link}}", &trojan_link)
-        .replace("{{ss_link}}", &ss_link);
-
-    // Kirimkan HTML sebagai respons
+    // Return HTML response
     Response::from_html(html)
 }
+
 /// Generates the vmess link
 fn generate_vmess_link(host: &str, uuid: &str) -> String {
     let config = json!({
