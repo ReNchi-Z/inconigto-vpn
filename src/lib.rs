@@ -101,22 +101,167 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
     let trojan_link = generate_trojan_link(&host, &uuid);
     let ss_link = generate_ss_link(&host, &uuid);
 
-    // Create an HTML response string
+    // Create an HTML response string with improved styling
     let html = format!(
         r#"
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
-            <title>Generated Links</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Connection Links</title>
+            <style>
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                }}
+                body {{
+                    background-color: #f5f5f5;
+                    padding: 20px;
+                    color: #333;
+                }}
+                .container {{
+                    max-width: 800px;
+                    margin: 0 auto;
+                    background-color: white;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 30px;
+                }}
+                h1 {{
+                    text-align: center;
+                    margin-bottom: 30px;
+                    color: #2563eb;
+                    font-size: 28px;
+                }}
+                .links-container {{
+                    display: grid;
+                    gap: 20px;
+                }}
+                .link-card {{
+                    border: 1px solid #e5e7eb;
+                    border-radius: 8px;
+                    padding: 15px;
+                    transition: all 0.3s ease;
+                }}
+                .link-card:hover {{
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                }}
+                .link-header {{
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 10px;
+                }}
+                .link-title {{
+                    font-weight: bold;
+                    font-size: 18px;
+                    color: #1f2937;
+                }}
+                .link-content {{
+                    position: relative;
+                    background-color: #f9fafb;
+                    border-radius: 6px;
+                    padding: 12px;
+                    font-family: monospace;
+                    font-size: 14px;
+                    word-break: break-all;
+                    margin-bottom: 10px;
+                    border: 1px solid #e5e7eb;
+                }}
+                .copy-btn {{
+                    background-color: #2563eb;
+                    color: white;
+                    border: none;
+                    border-radius: 6px;
+                    padding: 8px 16px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background-color 0.3s;
+                }}
+                .copy-btn:hover {{
+                    background-color: #1d4ed8;
+                }}
+                .success-message {{
+                    display: none;
+                    color: #059669;
+                    font-size: 14px;
+                    margin-top: 5px;
+                }}
+                @media (max-width: 600px) {{
+                    .container {{
+                        padding: 20px;
+                    }}
+                    .link-content {{
+                        font-size: 12px;
+                    }}
+                }}
+            </style>
         </head>
         <body>
-            <h1>Links</h1>
-            <ul>
-                <li><a href="{0}">VMess</a>: {0}</li>
-                <li><a href="{1}">VLESS</a>: {1}</li>
-                <li><a href="{2}">Trojan</a>: {2}</li>
-                <li><a href="{3}">Shadowsocks</a>: {3}</li>
-            </ul>
+            <div class="container">
+                <h1>Connection Links</h1>
+                <div class="links-container">
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">VMess</span>
+                            <button class="copy-btn" onclick="copyToClipboard('vmess-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="vmess-link">{0}</div>
+                        <div class="success-message" id="vmess-success">Copied to clipboard!</div>
+                    </div>
+                    
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">VLESS</span>
+                            <button class="copy-btn" onclick="copyToClipboard('vless-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="vless-link">{1}</div>
+                        <div class="success-message" id="vless-success">Copied to clipboard!</div>
+                    </div>
+                    
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">Trojan</span>
+                            <button class="copy-btn" onclick="copyToClipboard('trojan-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="trojan-link">{2}</div>
+                        <div class="success-message" id="trojan-success">Copied to clipboard!</div>
+                    </div>
+                    
+                    <div class="link-card">
+                        <div class="link-header">
+                            <span class="link-title">Shadowsocks</span>
+                            <button class="copy-btn" onclick="copyToClipboard('ss-link')">Copy</button>
+                        </div>
+                        <div class="link-content" id="ss-link">{3}</div>
+                        <div class="success-message" id="ss-success">Copied to clipboard!</div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function copyToClipboard(elementId) {{
+                    const element = document.getElementById(elementId);
+                    const text = element.textContent;
+                    
+                    navigator.clipboard.writeText(text).then(() => {{
+                        // Show success message
+                        const successId = elementId.split('-')[0] + '-success';
+                        const successElement = document.getElementById(successId);
+                        successElement.style.display = 'block';
+                        
+                        // Hide after 2 seconds
+                        setTimeout(() => {{
+                            successElement.style.display = 'none';
+                        }}, 2000);
+                    }}).catch(err => {{
+                        console.error('Failed to copy: ', err);
+                    }});
+                }}
+            </script>
         </body>
         </html>
         "#,
@@ -130,19 +275,19 @@ fn link(_: Request, cx: RouteContext<Config>) -> Result<Response> {
 /// Generates the vmess link
 fn generate_vmess_link(host: &str, uuid: &str) -> String {
     let config = json!({
-        "ps": "siren vmess",
+        "ps": "VMESS",
         "v": "2",
         "add": host,
-        "port": "80",
+        "port": "443",
         "id": uuid,
         "aid": "0",
         "scy": "zero",
         "net": "ws",
         "type": "none",
         "host": host,
-        "path": "/KR",
-        "tls": "",
-        "sni": "",
+        "path": "/ID",
+        "tls": "true",
+        "sni": host,
         "alpn": ""
     });
     format!("vmess://{}", URL_SAFE.encode(config.to_string()))
@@ -151,21 +296,21 @@ fn generate_vmess_link(host: &str, uuid: &str) -> String {
 /// Generates the vless link
 fn generate_vless_link(host: &str, uuid: &str) -> String {
     format!(
-        "vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#siren vless"
+        "vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#VLESS"
     )
 }
 
 /// Generates the trojan link
 fn generate_trojan_link(host: &str, uuid: &str) -> String {
     format!(
-        "trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#siren trojan"
+        "trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#TROJAN"
     )
 }
 
 /// Generates the ss link
 fn generate_ss_link(host: &str, uuid: &str) -> String {
     format!(
-        "ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FKR%3Bhost%3D{host}#siren ss",
+        "ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FKR%3Bhost%3D{host}#SS",
         URL_SAFE.encode(format!("none:{uuid}"))
     )
 }
