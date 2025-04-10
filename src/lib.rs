@@ -494,21 +494,21 @@ fn generate_vmess_link(host: &str, uuid: &str) -> String {
 /// Generates the vless link
 fn generate_vless_link(host: &str, uuid: &str) -> String {
     format!(
-        "vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#VLESS"
+        "vless://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FID&security=tls&sni={host}#VLESS"
     )
 }
 
 /// Generates the trojan link
 fn generate_trojan_link(host: &str, uuid: &str) -> String {
     format!(
-        "trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FKR&security=tls&sni={host}#TROJAN"
+        "trojan://{uuid}@{host}:443?encryption=none&type=ws&host={host}&path=%2FID&security=tls&sni={host}#TROJAN"
     )
 }
 
 /// Generates the ss link
 fn generate_ss_link(host: &str, uuid: &str) -> String {
     format!(
-        "ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FKR%3Bhost%3D{host}#SS",
+        "ss://{}@{host}:443?plugin=v2ray-plugin%3Btls%3Bmux%3D0%3Bmode%3Dwebsocket%3Bpath%3D%2FID%3Bhost%3D{host}#SS",
         URL_SAFE.encode(format!("none:{uuid}"))
     )
 }
