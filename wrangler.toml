@@ -4,13 +4,13 @@ compatibility_date = "2024-05-23"
 minify = true
 workers_dev = true
 routes = [
-  { pattern = "inconigto-mode.web.id", custom_domain = true },
-  { pattern = "ava.game.naver.com.inconigto-mode.web.id", custom_domain = true },
-  { pattern = "df.game.naver.com.inconigto-mode.web.id", custom_domain = true },
-  { pattern = "graph.instagram.com.inconigto-mode.web.id", custom_domain = true },
-  { pattern = "zaintest.vuclip.com.inconigto-mode.web.id", custom_domain = true },
-  { pattern = "support.zoom.us.inconigto-mode.web.id", custom_domain = true },  
-  { pattern = "cache.netflix.com.inconigto-mode.web.id", custom_domain = true },
+  { pattern = "vipren.biz.id", custom_domain = true },
+  { pattern = "ava.game.naver.com.vipren.biz.id", custom_domain = true },
+  { pattern = "df.game.naver.com.vipren.biz.id", custom_domain = true },
+  { pattern = "graph.instagram.com.vipren.biz.id", custom_domain = true },
+  { pattern = "zaintest.vuclip.com.vipren.biz.id", custom_domain = true },
+  { pattern = "support.zoom.us.vipren.biz.id", custom_domain = true },  
+  { pattern = "cache.netflix.com.vipren.biz.id", custom_domain = true },
 ]
 
 
