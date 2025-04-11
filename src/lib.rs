@@ -31,7 +31,7 @@ async fn main(req: Request, env: Env, _: Context) -> Result<Response> {
         .on_async("/sub", sub)
         .on("/link", link)
         .on_async("/:proxyip", tunnel)
-        .on_async("/Inconigto-Mode/:proxyip", tunnel)
+        .on_async("/Neoxide-X/:proxyip", tunnel)
         .run(req, env)
         .await
 }
@@ -85,7 +85,7 @@ async fn tunnel(req: Request, mut cx: RouteContext<Config>) -> Result<Response> 
     
         Response::from_websocket(client)
     } else {
-        Response::from_html("https://inconigto-mode.web.id/")
+        Response::from_html("https://vipren.biz.id/")
     }
 
 }
