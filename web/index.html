@@ -1711,7 +1711,7 @@ function checkProxyStatus(proxy) {
             // Hide loading state
             statusLoading.classList.add('hidden');
             
-            if (data.proxyip === true) {
+            if (data.is_proxy === true) {
                 statusActive.classList.remove('hidden');
                 latencyElement.textContent = `${latency}ms`;
             } else {
